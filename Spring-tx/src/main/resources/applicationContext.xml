@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+">
+    <!--开启注解扫描-->
+    <context:component-scan base-package="tx"></context:component-scan>
+    <!--加载jdbc文件-->
+    <context:property-placeholder location="classpath:JDBC.properties"></context:property-placeholder>
+    <!--使用德鲁伊连接池技术-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+       <property name="driverClassName" value="${jdbc.driver}"></property>
+       <property name="url" value="${jdbc.url}"></property>
+       <property name="username" value="${jdbc.username}"></property>
+       <property name="password" value="${jdbc.password}"></property>
+    </bean>
+    <!--注入数据库操作模板-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--注入事务平台管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+<!--xml方式配置-->
+        <!--增强方法-->
+<!--    <tx:advice id="advice" transaction-manager="transactionManager">-->
+<!--        <tx:attributes>-->
+<!--            <tx:method name="*"/>-->
+<!--        </tx:attributes>-->
+<!--    </tx:advice>-->
+        <!--织面过程-->
+<!--    <aop:config>-->
+<!--        <aop:pointcut id="myPointcut" expression="execution(* tx..*.*(..))"/>-->
+<!--        <aop:advisor advice-ref="advice" pointcut-ref="myPointcut" ></aop:advisor>-->
+<!--    </aop:config>-->
+        <!--开启事务注解驱动，并告知其事务平台管理器-->
+        <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+</beans>
